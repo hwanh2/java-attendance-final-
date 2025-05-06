@@ -17,4 +17,8 @@ public class CrewRepository {
         Crew crew = crews.get(name);
         crew.addAttendance(attendance);
     }
+
+    public Crew findByName(String name) {
+        return crews.get(name); // 불변 객체만 반환하거나 복사하면 안전
+    }
 }
