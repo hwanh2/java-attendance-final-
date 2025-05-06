@@ -16,4 +16,8 @@ public class Crew {
         return records;
     }
 
+    public void addAttendance(Attendance attendance) {
+        records.add(attendance);
+    }
+
 }
