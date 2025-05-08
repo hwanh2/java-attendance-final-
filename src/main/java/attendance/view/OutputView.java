@@ -68,7 +68,6 @@ public class OutputView {
             case EXPULSION -> System.out.println("제적 대상자입니다.");
             case COUNSEL -> System.out.println("면담 대상자입니다.");
             case WARNING -> System.out.println("경고 대상자입니다.");
-            case NORMAL -> System.out.println("정상입니다.");
         }
     }
 
