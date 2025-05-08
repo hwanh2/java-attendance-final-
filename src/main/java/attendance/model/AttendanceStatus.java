@@ -1,8 +1,18 @@
 package attendance.model;
 
 public enum AttendanceStatus {
-    ATTENDANCE, // 정상 출석
-    LATE, // 지각
-    ABSENT, // 결석
-    UNDETERMINED // 아직 판단되지 않음
+    ATTENDANCE("출석"),
+    LATE("지각"),
+    ABSENT("결석");
+
+    private final String displayName;
+
+    AttendanceStatus(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
 }
+

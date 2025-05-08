@@ -22,7 +22,7 @@ public class AttendanceRegisterService {
         this.crewRepository = crewRepository;
     }
 
-    public void register(String name, String timeInput) {
+    public Attendance register(String name, String timeInput) {
         LocalDate today = LocalDate.now();
         LocalTime inputTime = LocalTime.parse(timeInput);
         LocalDateTime dateTime = LocalDateTime.of(today, inputTime);
@@ -36,6 +36,8 @@ public class AttendanceRegisterService {
         Attendance attendance = Attendance.from(dateTime, status);
 
         crewRepository.addAttendance(name, attendance);
+
+        return attendance;
     }
 
     private void validateNotAlreadyAttended(String name, LocalDate today) {
