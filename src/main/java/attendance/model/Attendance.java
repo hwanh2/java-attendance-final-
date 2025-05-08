@@ -16,6 +16,10 @@ public class Attendance {
         return dateTime;
     }
 
+    public AttendanceStatus getStatus() {
+        return status;
+    }
+
     public static Attendance from(LocalDateTime dateTime, AttendanceStatus status){
         return new Attendance(dateTime,status);
     }
