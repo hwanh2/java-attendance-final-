@@ -15,6 +15,11 @@ import java.util.List;
 public class AttendanceCheckService {
     private final CrewRepository crewRepository;
 
+    private static final int LATE_PER_ABSENT = 3;
+    private static final int WARNING_THRESHOLD = 2;
+    private static final int COUNSEL_THRESHOLD = 3;
+    private static final int EXPULSION_THRESHOLD = 5;
+
     public AttendanceCheckService(CrewRepository crewRepository) {
         this.crewRepository = crewRepository;
     }
@@ -58,11 +63,11 @@ public class AttendanceCheckService {
     }
 
     private AttendanceRiskLevel determineRiskLevel(int late, int absent) {
-        int effectiveAbsents = absent + (late / 3);
+        int effectiveAbsents = absent + (late / LATE_PER_ABSENT);
 
-        if (effectiveAbsents > 5) return AttendanceRiskLevel.EXPULSION;
-        if (effectiveAbsents >= 3) return AttendanceRiskLevel.COUNSEL;
-        if (effectiveAbsents >= 2) return AttendanceRiskLevel.WARNING;
+        if (effectiveAbsents > EXPULSION_THRESHOLD) return AttendanceRiskLevel.EXPULSION;
+        if (effectiveAbsents >= COUNSEL_THRESHOLD) return AttendanceRiskLevel.COUNSEL;
+        if (effectiveAbsents >= WARNING_THRESHOLD) return AttendanceRiskLevel.WARNING;
         return AttendanceRiskLevel.NORMAL;
     }
 }
