@@ -28,17 +28,21 @@ public class OutputView {
         String statusText = attendance.getStatus().getDisplayName();
 
         System.out.println(formattedDate + " (" + statusText + ")");
+        System.out.println();
     }
 
     public void printModifyResult(Attendance before, Attendance after) {
         String date = before.getDateTime().format(DATE_FORMATTER);
-        String oldTime = before.getDateTime().format(TIME_FORMATTER);
+        String oldTime = before.getDateTime().toLocalTime().equals(LocalTime.MIDNIGHT)
+                ? "--:--"
+                : before.getDateTime().format(TIME_FORMATTER);
         String newTime = after.getDateTime().format(TIME_FORMATTER);
         String oldStatus = before.getStatus().getDisplayName();
         String newStatus = after.getStatus().getDisplayName();
 
         String result = String.format("%s %s (%s) -> %s (%s) 수정 완료!", date, oldTime, oldStatus, newTime, newStatus);
         System.out.println(result);
+        System.out.println();
     }
 
     public void printMonthlySummary(AttendanceCheckDto dto) {
@@ -66,6 +70,7 @@ public class OutputView {
         System.out.println();
 
         printRiskLevelMessage(dto.getRiskLevel());
+        System.out.println();
     }
 
     private void printRiskLevelMessage(AttendanceRiskLevel level) {
@@ -101,6 +106,7 @@ public class OutputView {
                     dto.getName(), dto.getAbsentCount(), dto.getLateCount(), dto.getRiskLevel().getDisplayName());
             System.out.println(line);
         }
+        System.out.println();
     }
 
 }

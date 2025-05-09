@@ -53,6 +53,7 @@ public class AttendanceModifyService {
 
         // 출석이 없으면 새로 추가
         records.add(newAttendance);
-        return List.of(null, newAttendance); // before가 없음
+        Attendance before = Attendance.from(newDateTime.withHour(0).withMinute(0), AttendanceStatus.ABSENT);
+        return List.of(before, newAttendance); // before가 없음
     }
 }
