@@ -1,6 +1,8 @@
 package attendance.controller;
 
 import attendance.dto.AttendanceCheckDto;
+import attendance.dto.AttendanceRiskLevel;
+import attendance.dto.RiskCheckDto;
 import attendance.model.Attendance;
 import attendance.service.*;
 import attendance.view.InputView;
@@ -15,21 +17,21 @@ public class AttendanceController {
     private final AttendanceFileLoaderService attendanceFileLoaderService;
     private final AttendanceModifyService attendanceModifyService;
     private final AttendanceRegisterService attendanceRegisterService;
-    private final AttendanceStatusCalculatorService attendanceStatusCalculatorService;
+    private final AttendanceRiskCheckService attendanceRiskCheckService;
 
     public AttendanceController(InputView inputView, OutputView outputView,
                                 AttendanceCheckService attendanceCheckService,
                                 AttendanceFileLoaderService attendanceFileLoaderService,
                                 AttendanceModifyService attendanceModifyService,
                                 AttendanceRegisterService attendanceRegisterService,
-                                AttendanceStatusCalculatorService attendanceStatusCalculatorService) {
+                                AttendanceRiskCheckService attendanceRiskCheckService) {
         this.inputView = inputView;
         this.outputView = outputView;
         this.attendanceCheckService = attendanceCheckService;
         this.attendanceFileLoaderService = attendanceFileLoaderService;
         this.attendanceModifyService = attendanceModifyService;
         this.attendanceRegisterService = attendanceRegisterService;
-        this.attendanceStatusCalculatorService = attendanceStatusCalculatorService;
+        this.attendanceRiskCheckService = attendanceRiskCheckService;
     }
 
     public void run(){
@@ -55,6 +57,9 @@ public class AttendanceController {
         }
         if(option.equals("3")){
             runAttendanceCheck();
+        }
+        if(option.equals("4")){
+            runAttendanceRiskCheck();
         }
     }
 
@@ -83,5 +88,10 @@ public class AttendanceController {
         AttendanceCheckDto attendanceCheckDto = attendanceCheckService.AttendanceCheck(name);
 
         outputView.printMonthlySummary(attendanceCheckDto);
+    }
+
+    private void runAttendanceRiskCheck(){
+        List<RiskCheckDto> results = attendanceRiskCheckService.attendanceRiskCheck();
+        outputView.printCrewsRiskLevel(results);
     }
 }

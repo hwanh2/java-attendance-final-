@@ -17,7 +17,7 @@ public class Application {
         AttendanceRegisterService registerService = new AttendanceRegisterService(crewRepository);
         AttendanceModifyService modifyService = new AttendanceModifyService(crewRepository);
         AttendanceCheckService checkService = new AttendanceCheckService(crewRepository);
-        AttendanceStatusCalculatorService calculatorService = new AttendanceStatusCalculatorService();
+        AttendanceRiskCheckService riskCheckService = new AttendanceRiskCheckService(crewRepository);
 
         AttendanceController controller = new AttendanceController(
                 inputView,
@@ -26,7 +26,7 @@ public class Application {
                 fileLoaderService,
                 modifyService,
                 registerService,
-                calculatorService
+                riskCheckService
         );
 
         controller.run();
