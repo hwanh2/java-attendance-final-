@@ -11,6 +11,9 @@ import java.util.List;
 public class AttendanceModifyService {
     private final CrewRepository crewRepository;
 
+    private static final LocalTime MONDAY_CLASS_START = LocalTime.of(13, 0);
+    private static final LocalTime DEFAULT_CLASS_START = LocalTime.of(10, 0);
+
     public AttendanceModifyService(CrewRepository crewRepository) {
         this.crewRepository = crewRepository;
     }
@@ -32,8 +35,8 @@ public class AttendanceModifyService {
         LocalTime newTime = LocalTime.parse(newTimeInput);
         LocalDateTime newDateTime = LocalDateTime.of(targetDate, newTime);
         LocalTime classStart = (targetDate.getDayOfWeek() == DayOfWeek.MONDAY)
-                ? LocalTime.of(13, 0)
-                : LocalTime.of(10, 0);
+                ? MONDAY_CLASS_START
+                : DEFAULT_CLASS_START;
         AttendanceStatus newStatus = AttendanceStatusCalculatorService.calculate(newDateTime, classStart);
         Attendance newAttendance = Attendance.from(newDateTime, newStatus);
 
