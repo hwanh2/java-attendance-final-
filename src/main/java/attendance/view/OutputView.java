@@ -7,6 +7,7 @@ import attendance.model.Attendance;
 import attendance.model.AttendanceStatus;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
@@ -46,10 +47,12 @@ public class OutputView {
         System.out.println();
 
         List<Attendance> records = dto.getRecords();
+        records.sort(Comparator.comparing(Attendance::getDateTime));
+
         for (Attendance a : records) {
             LocalDateTime dt = a.getDateTime();
             String date = dt.format(DATE_FORMATTER);
-            String time = (a.getStatus() == AttendanceStatus.ABSENT) ? "--:--" : dt.format(TIME_FORMATTER);
+            String time = dt.toLocalTime().equals(LocalTime.MIDNIGHT) ? "--:--" : dt.format(TIME_FORMATTER);
             String status = a.getStatus().getDisplayName();
 
             String line = String.format("%s %s (%s)", date, time, status);

@@ -8,9 +8,13 @@ import attendance.model.Crew;
 import attendance.repository.CrewRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class AttendanceCheckService {
     private final CrewRepository crewRepository;
@@ -50,17 +54,38 @@ public class AttendanceCheckService {
     }
 
     private List<Attendance> findRecords(Crew crew) {
-        Month thisMonth = LocalDate.now().getMonth();
         List<Attendance> result = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        int year = today.getYear();
+        Month month = today.getMonth();
 
+        Set<LocalDate> recordedDates = new HashSet<>();
         for (Attendance a : crew.getRecords()) {
-            if (a.getDateTime().getMonth() == thisMonth) {
+            if (a.getDateTime().getMonth() == month && a.getDateTime().getYear() == year) {
                 result.add(a);
+                recordedDates.add(a.getDateTime().toLocalDate());
+            }
+        }
+
+        // 공휴일 제외
+        Set<LocalDate> holidays = Set.of(
+                LocalDate.of(2025, 5, 5),
+                LocalDate.of(2025, 5, 6)
+        );
+
+        for (int day = 1; day <= today.getDayOfMonth(); day++) {
+            LocalDate date = LocalDate.of(year, month, day);
+            if (date.getDayOfWeek().getValue() >= 6) continue; // 토, 일
+            if (holidays.contains(date)) continue;
+            if (!recordedDates.contains(date)) {
+                LocalDateTime absentTime = LocalDateTime.of(date, LocalTime.of(0, 0));
+                result.add(Attendance.from(absentTime, AttendanceStatus.ABSENT));
             }
         }
 
         return result;
     }
+
 
     private AttendanceRiskLevel determineRiskLevel(int late, int absent) {
         int effectiveAbsents = absent + (late / LATE_PER_ABSENT);
