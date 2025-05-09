@@ -37,30 +37,33 @@ public class AttendanceController {
     public void run(){
         attendanceFileLoaderService.load("src/main/resources/attendances.csv");
 
-        while (true){
-            try{
-                String option = inputView.readInputOption();
-                runOption(option);
+        while (true) {
+            String option = inputView.readInputOption();
+            if (option.equals("Q")) {
+                break;
             }
-            catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            }
+            runOption(option);
         }
     }
 
     private void runOption(String option){
         if(option.equals("1")){
             runAttendanceRegister();
+            return;
         }
         if(option.equals("2")){
             runAttendanceModify();
+            return;
         }
         if(option.equals("3")){
             runAttendanceCheck();
+            return;
         }
         if(option.equals("4")){
             runAttendanceRiskCheck();
+            return;
         }
+        throw new IllegalArgumentException("[ERROR] 잘못된 형식을 입력하였습니다.");
     }
 
     private void runAttendanceRegister(){
