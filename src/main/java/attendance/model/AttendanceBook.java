@@ -1,11 +1,7 @@
 package attendance.model;
 
-import attendance.model.Attendance;
-import attendance.model.AttendanceStatus;
-import attendance.model.Crew;
-import attendance.service.AttendanceStatusCalculatorService;
-
 import java.time.*;
+import java.time.format.TextStyle;
 import java.util.*;
 
 public class AttendanceBook {
@@ -23,12 +19,14 @@ public class AttendanceBook {
         LocalDateTime dateTime = LocalDateTime.of(today, inputTime);
         DayOfWeek day = today.getDayOfWeek();
 
+        validateWeekend(today,day);
+
         Crew crew = Crew.from(name);
         validateAttended(crew, today);
 
         LocalTime classStart = (day == DayOfWeek.MONDAY) ? MONDAY_CLASS_START : OTHER_DAYS_CLASS_START;
-        AttendanceStatus status = AttendanceStatusCalculatorService.calculate(dateTime, classStart);
-        Attendance attendance = Attendance.from(dateTime, status);
+
+        Attendance attendance = Attendance.from(dateTime, classStart);
 
         attendanceBook.get(crew).add(attendance);
 
@@ -47,6 +45,17 @@ public class AttendanceBook {
             if (a.getDateTime().toLocalDate().equals(today)) {
                 throw new IllegalArgumentException(DUPLICATE_ATTENDANCE_ERROR);
             }
+        }
+    }
+
+    private void validateWeekend(LocalDate today,DayOfWeek day){
+        if (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) {
+            String dayName = day.getDisplayName(TextStyle.FULL, Locale.KOREAN);
+            throw new IllegalArgumentException(String.format("[ERROR] %d월 %d일 %s은 등교일이 아닙니다.",
+                    today.getMonthValue(),
+                    today.getDayOfMonth(),
+                    dayName
+            ));
         }
     }
 
