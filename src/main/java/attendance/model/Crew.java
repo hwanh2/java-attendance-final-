@@ -10,6 +10,10 @@ public class Crew {
         this.name = name;
     }
 
+    public static Crew from(String name){
+        return new Crew(name);
+    }
+
     public Crew getName(String name) {
         return new Crew(name);
     }
