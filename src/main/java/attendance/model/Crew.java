@@ -5,19 +5,12 @@ import java.util.List;
 
 public class Crew {
     private final String name;
-    private final List<Attendance> records;
 
-    public Crew(String name) {
+    private Crew(String name) {
         this.name = name;
-        this.records = new ArrayList<>();
     }
 
-    public List<Attendance> getRecords() {
-        return records;
+    public Crew getName(String name) {
+        return new Crew(name);
     }
-
-    public void addAttendance(Attendance attendance) {
-        records.add(attendance);
-    }
-
 }
