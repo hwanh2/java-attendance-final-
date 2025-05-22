@@ -14,9 +14,6 @@ public class AttendanceBook {
     private static final String FUTURE_DATE_ERROR = "[ERROR] 미래 날짜로는 출석을 수정할 수 없습니다.";
 
     private static final int LATE_PER_ABSENT = 3;
-    private static final int WARNING_THRESHOLD = 2;
-    private static final int COUNSEL_THRESHOLD = 3;
-    private static final int EXPULSION_THRESHOLD = 5;
 
 
     // 출석 등록
@@ -153,4 +150,34 @@ public class AttendanceBook {
         }
         return null;
     }
+
+    public List<Crew> getAtRiskCrews() {
+        List<Crew> result = new ArrayList<>();
+        for (Crew crew : attendanceBook.keySet()) {
+            if (crew.getRiskLevel() != AttendanceRiskLevel.NORMAL) {
+                result.add(crew);
+            }
+        }
+
+        Collections.sort(result, new Comparator<Crew>() {
+            @Override
+            public int compare(Crew c1, Crew c2) {
+                // 1. 위험 수준 우선순위 (높을수록 위험)
+                int levelCompare = Integer.compare(c2.getRiskLevel().getPriority(), c1.getRiskLevel().getPriority());
+                if (levelCompare != 0) return levelCompare;
+
+                // 2. 실질 결석 수 비교 (내림차순)
+                int c1Absents = c1.getAbsentCount() + c1.getLateCount() / LATE_PER_ABSENT;
+                int c2Absents = c2.getAbsentCount() + c2.getLateCount() / LATE_PER_ABSENT;
+                int absenceCompare = Integer.compare(c2Absents, c1Absents);
+                if (absenceCompare != 0) return absenceCompare;
+
+                // 3. 이름 오름차순
+                return c1.getName().compareTo(c2.getName());
+            }
+        });
+
+        return result;
+    }
+
 }

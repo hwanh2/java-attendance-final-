@@ -50,10 +50,10 @@ public class AttendanceController {
             runAttendanceCheck();
             return;
         }
-//        if(option.equals("4")){
-//            runAttendanceRiskCheck();
-//            return;
-//        }
+        if(option.equals("4")){
+            runAttendanceRiskCheck();
+            return;
+        }
         throw new IllegalArgumentException("[ERROR] 잘못된 형식을 입력하였습니다.");
     }
 
@@ -90,8 +90,8 @@ public class AttendanceController {
         outputView.printMonthlySummary(name, records, attend, late, absent, riskLevel);
     }
 
-//    private void runAttendanceRiskCheck(){
-//        List<RiskCheckDto> results = attendanceRiskCheckService.attendanceRiskCheck();
-//        outputView.printCrewsRiskLevel(results);
-//    }
+    private void runAttendanceRiskCheck(){
+        List<Crew> results = attendanceBook.getAtRiskCrews();
+        outputView.printCrewsRiskLevel(results);
+    }
 }
