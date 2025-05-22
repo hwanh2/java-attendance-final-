@@ -1,7 +1,6 @@
 package attendance.service;
 
 import attendance.dto.AttendanceCheckDto;
-import attendance.dto.AttendanceRiskLevel;
 import attendance.model.Attendance;
 import attendance.model.AttendanceStatus;
 import attendance.repository.CrewRepository;
@@ -9,8 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

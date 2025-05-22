@@ -1,4 +1,4 @@
-package attendance.dto;
+package attendance.model;
 
 public enum AttendanceRiskLevel {
     NORMAL("정상"),

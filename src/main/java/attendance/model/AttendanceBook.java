@@ -34,6 +34,7 @@ public class AttendanceBook {
         return attendance;
     }
 
+    // 등록되지 않은 크루면 에러 발생
     private Crew findCrewOrThrow(String name) {
         for (Crew crew : attendanceBook.keySet()) {
             if (crew.getName().equals(name)) {
@@ -69,6 +70,7 @@ public class AttendanceBook {
         }
     }
 
+    // 출석 수정
     public List<Attendance> modifyAttendance(String name, int dayOfMonth, String newTimeInput) {
         Crew crew = findCrewOrThrow(name);
 

@@ -1,8 +1,5 @@
 package attendance.controller;
 
-import attendance.dto.AttendanceCheckDto;
-import attendance.dto.AttendanceRiskLevel;
-import attendance.dto.RiskCheckDto;
 import attendance.model.Attendance;
 import attendance.model.AttendanceBook;
 import attendance.service.*;
