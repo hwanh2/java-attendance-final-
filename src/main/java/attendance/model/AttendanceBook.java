@@ -119,7 +119,10 @@ public class AttendanceBook {
 
     // 크루별 출석 목록 조회
     public List<Attendance> getAttendancesByCrew(Crew crew) {
-        return attendanceBook.get(crew);
+        List<Attendance> records = attendanceBook.get(crew);
+        records.sort(Comparator.comparing(Attendance::getDateTime));
+
+        return records;
     }
 
     public Crew getCrew(String name) {

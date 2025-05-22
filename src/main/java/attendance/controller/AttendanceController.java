@@ -82,12 +82,8 @@ public class AttendanceController {
         Crew crew = attendanceBook.getCrew(name);
 
         List<Attendance> records = attendanceBook.getAttendancesByCrew(crew);
-        int attend = crew.getAttendCount();
-        int late = crew.getLateCount();
-        int absent = crew.getAbsentCount();
-        AttendanceRiskLevel riskLevel = crew.getRiskLevel();
 
-        outputView.printMonthlySummary(name, records, attend, late, absent, riskLevel);
+        outputView.printMonthlyAttendance(crew,records);
     }
 
     private void runAttendanceRiskCheck(){

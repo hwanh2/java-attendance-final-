@@ -44,12 +44,17 @@ public class OutputView {
         System.out.println();
     }
 
-    public void printMonthlySummary(String name,List<Attendance> records,int attend,int late,int absent,AttendanceRiskLevel riskLevel) {
+    public void printMonthlyAttendance(Crew crew,List<Attendance> records) {
+        String name = crew.getName();
+        int attendCount = crew.getAttendCount();
+        int lateCount = crew.getLateCount();
+        int absentCount = crew.getAbsentCount();
+        AttendanceRiskLevel riskLevel = crew.getRiskLevel();
+
         System.out.println();
         System.out.println("이번 달 " + name + "의 출석 기록입니다.");
         System.out.println();
 
-        records.sort(Comparator.comparing(Attendance::getDateTime));
 
         for (Attendance a : records) {
             LocalDateTime dt = a.getDateTime();
@@ -62,21 +67,20 @@ public class OutputView {
         }
 
         System.out.println();
-        System.out.printf("출석: %d회%n", attend);
-        System.out.printf("지각: %d회%n", late);
-        System.out.printf("결석: %d회%n", absent);
+        System.out.printf("출석: %d회%n", attendCount);
+        System.out.printf("지각: %d회%n", lateCount);
+        System.out.printf("결석: %d회%n", absentCount);
         System.out.println();
 
         printRiskLevelMessage(riskLevel);
-        System.out.println();
     }
 
 
     private void printRiskLevelMessage(AttendanceRiskLevel level) {
         switch (level) {
-            case EXPULSION -> System.out.println("제적 대상자입니다.");
-            case COUNSEL -> System.out.println("면담 대상자입니다.");
-            case WARNING -> System.out.println("경고 대상자입니다.");
+            case EXPULSION -> System.out.println("제적 대상자입니다.\n");
+            case COUNSEL -> System.out.println("면담 대상자입니다.\n");
+            case WARNING -> System.out.println("경고 대상자입니다.\n");
         }
     }
 
