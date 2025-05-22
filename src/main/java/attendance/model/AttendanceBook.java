@@ -59,6 +59,32 @@ public class AttendanceBook {
         }
     }
 
+    public List<Attendance> modifyAttendance(String name, int dayOfMonth, String newTimeInput) {
+        Crew crew = findCrewOrThrow(name);
+
+        LocalDate targetDate = validateAndGetTargetDate(dayOfMonth);
+
+        LocalTime newTime = LocalTime.parse(newTimeInput);
+        LocalDateTime newDateTime = LocalDateTime.of(targetDate, newTime);
+
+        LocalTime classStart = (targetDate.getDayOfWeek() == DayOfWeek.MONDAY) ? MONDAY_CLASS_START : OTHER_DAYS_CLASS_START;
+
+        Attendance newAttendance = Attendance.from(newDateTime, classStart);
+
+        List<Attendance> records = attendanceBook.get(crew);
+
+        Attendance before = findAndReplace(records, targetDate, newAttendance);
+        if (before != null) {
+            return List.of(before, newAttendance);
+        }
+
+        // 기존 출석 기록이 없으면 새로 추가
+        records.add(newAttendance);
+        before = Attendance.from(newDateTime.withHour(0).withMinute(0), classStart); // 가상의 결석 상태
+        return List.of(before, newAttendance);
+    }
+
+
     // 크루별 출석 목록 조회
     public List<Attendance> getAttendancesByCrew(Crew crew) {
         return attendanceBook.get(crew);
@@ -67,5 +93,37 @@ public class AttendanceBook {
     // 전체 출석부 조회
     public Map<Crew, List<Attendance>> getAllAttendances() {
         return attendanceBook;
+    }
+
+    private Crew findCrewOrThrow(String name) {
+        Crew crew = Crew.from(name);
+        if (!attendanceBook.containsKey(crew)) {
+            throw new IllegalArgumentException("[ERROR] 등록되지 않은 닉네임입니다.");
+        }
+        return crew;
+    }
+
+    private LocalDate validateAndGetTargetDate(int dayOfMonth) {
+        YearMonth currentMonth = YearMonth.now();
+        LocalDate today = LocalDate.now();
+        LocalDate targetDate = currentMonth.atDay(dayOfMonth);
+
+        if (targetDate.isAfter(today)) {
+            throw new IllegalArgumentException("[ERROR] 미래 날짜로는 출석을 수정할 수 없습니다.");
+        }
+
+        return targetDate;
+    }
+
+    private Attendance findAndReplace(List<Attendance> records, LocalDate targetDate, Attendance newAttendance) {
+        for (int i = 0; i < records.size(); i++) {
+            Attendance record = records.get(i);
+            if (record.getDateTime().toLocalDate().equals(targetDate)) {
+                Attendance before = record;
+                records.set(i, newAttendance);
+                return before;
+            }
+        }
+        return null;
     }
 }
