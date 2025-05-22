@@ -2,7 +2,9 @@ package attendance.controller;
 
 import attendance.model.Attendance;
 import attendance.model.AttendanceBook;
-import attendance.service.*;
+import attendance.model.AttendanceRiskLevel;
+import attendance.model.Crew;
+import attendance.service.AttendanceFileLoaderService;
 import attendance.view.InputView;
 import attendance.view.OutputView;
 
@@ -44,10 +46,10 @@ public class AttendanceController {
             runAttendanceModify();
             return;
         }
-//        if(option.equals("3")){
-//            runAttendanceCheck();
-//            return;
-//        }
+        if(option.equals("3")){
+            runAttendanceCheck();
+            return;
+        }
 //        if(option.equals("4")){
 //            runAttendanceRiskCheck();
 //            return;
@@ -75,13 +77,19 @@ public class AttendanceController {
         outputView.printModifyResult(before, after);
     }
 
-//    private void runAttendanceCheck(){
-//        String name = inputView.readInputName();
-//        AttendanceCheckDto attendanceCheckDto = attendanceCheckService.AttendanceCheck(name);
-//
-//        outputView.printMonthlySummary(attendanceCheckDto);
-//    }
-//
+    private void runAttendanceCheck(){
+        String name = inputView.readInputName();
+        Crew crew = attendanceBook.getCrew(name);
+
+        List<Attendance> records = attendanceBook.getAttendancesByCrew(crew);
+        int attend = crew.getAttendCount();
+        int late = crew.getLateCount();
+        int absent = crew.getAbsentCount();
+        AttendanceRiskLevel riskLevel = crew.getRiskLevel();
+
+        outputView.printMonthlySummary(name, records, attend, late, absent, riskLevel);
+    }
+
 //    private void runAttendanceRiskCheck(){
 //        List<RiskCheckDto> results = attendanceRiskCheckService.attendanceRiskCheck();
 //        outputView.printCrewsRiskLevel(results);

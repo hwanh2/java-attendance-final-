@@ -1,8 +1,8 @@
 package attendance.view;
 
-import attendance.dto.AttendanceCheckDto;
-import attendance.dto.RiskCheckDto;
+
 import attendance.model.Attendance;
+import attendance.model.AttendanceRiskLevel;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -43,12 +43,11 @@ public class OutputView {
         System.out.println();
     }
 
-    public void printMonthlySummary(AttendanceCheckDto dto) {
+    public void printMonthlySummary(String name,List<Attendance> records,int attend,int late,int absent,AttendanceRiskLevel riskLevel) {
         System.out.println();
-        System.out.println("이번 달 " + dto.getName() + "의 출석 기록입니다.");
+        System.out.println("이번 달 " + name + "의 출석 기록입니다.");
         System.out.println();
 
-        List<Attendance> records = dto.getRecords();
         records.sort(Comparator.comparing(Attendance::getDateTime));
 
         for (Attendance a : records) {
@@ -62,14 +61,15 @@ public class OutputView {
         }
 
         System.out.println();
-        System.out.println(String.format("출석: %d회", dto.getAttendCount()));
-        System.out.println(String.format("지각: %d회", dto.getLateCount()));
-        System.out.println(String.format("결석: %d회", dto.getAbsentCount()));
+        System.out.printf("출석: %d회%n", attend);
+        System.out.printf("지각: %d회%n", late);
+        System.out.printf("결석: %d회%n", absent);
         System.out.println();
 
-        printRiskLevelMessage(dto.getRiskLevel());
+        printRiskLevelMessage(riskLevel);
         System.out.println();
     }
+
 
     private void printRiskLevelMessage(AttendanceRiskLevel level) {
         switch (level) {
@@ -79,32 +79,32 @@ public class OutputView {
         }
     }
 
-    public void printCrewsRiskLevel(List<RiskCheckDto> results) {
-        System.out.println("제적 위험자 조회 결과");
-
-        results.sort(new Comparator<RiskCheckDto>() {
-            @Override
-            public int compare(RiskCheckDto a, RiskCheckDto b) {
-                // 1. 위험 레벨 우선순위: EXPULSION > COUNSEL > WARNING
-                int levelCompare = b.getRiskLevel().ordinal() - a.getRiskLevel().ordinal();
-                if (levelCompare != 0) return levelCompare;
-
-                // 2. 결석 + (지각 / 3) 내림차순
-                int aScore = a.getAbsentCount() + a.getLateCount() / 3;
-                int bScore = b.getAbsentCount() + b.getLateCount() / 3;
-                if (aScore != bScore) return bScore - aScore;
-
-                // 3. 이름 오름차순
-                return a.getName().compareTo(b.getName());
-            }
-        });
-
-        for (RiskCheckDto dto : results) {
-            String line = String.format("- %s: 결석 %d회, 지각 %d회 (%s)",
-                    dto.getName(), dto.getAbsentCount(), dto.getLateCount(), dto.getRiskLevel().getDisplayName());
-            System.out.println(line);
-        }
-        System.out.println();
-    }
+//    public void printCrewsRiskLevel(List<RiskCheckDto> results) {
+//        System.out.println("제적 위험자 조회 결과");
+//
+//        results.sort(new Comparator<RiskCheckDto>() {
+//            @Override
+//            public int compare(RiskCheckDto a, RiskCheckDto b) {
+//                // 1. 위험 레벨 우선순위: EXPULSION > COUNSEL > WARNING
+//                int levelCompare = b.getRiskLevel().ordinal() - a.getRiskLevel().ordinal();
+//                if (levelCompare != 0) return levelCompare;
+//
+//                // 2. 결석 + (지각 / 3) 내림차순
+//                int aScore = a.getAbsentCount() + a.getLateCount() / 3;
+//                int bScore = b.getAbsentCount() + b.getLateCount() / 3;
+//                if (aScore != bScore) return bScore - aScore;
+//
+//                // 3. 이름 오름차순
+//                return a.getName().compareTo(b.getName());
+//            }
+//        });
+//
+//        for (RiskCheckDto dto : results) {
+//            String line = String.format("- %s: 결석 %d회, 지각 %d회 (%s)",
+//                    dto.getName(), dto.getAbsentCount(), dto.getLateCount(), dto.getRiskLevel().getDisplayName());
+//            System.out.println(line);
+//        }
+//        System.out.println();
+//    }
 
 }
