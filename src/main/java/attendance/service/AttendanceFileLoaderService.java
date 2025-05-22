@@ -49,8 +49,7 @@ public class AttendanceFileLoaderService {
 
                 Attendance attendance = Attendance.from(dateTime, classStartTime);
 
-                List<Attendance> records = attendanceBook.getAttendancesByCrew(crew);
-                records.add(attendance);
+                attendanceBook.addAttendance(name, attendance);
             }
         } catch (IOException e) {
             System.out.println("[ERROR] CSV 파일 로딩 실패: " + e.getMessage());

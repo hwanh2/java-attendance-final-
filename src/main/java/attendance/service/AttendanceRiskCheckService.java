@@ -1,3 +1,4 @@
+/*
 package attendance.service;
 
 import attendance.dto.AttendanceRiskLevel;
@@ -63,3 +64,4 @@ public class AttendanceRiskCheckService {
         return AttendanceRiskLevel.NORMAL;
     }
 }
+*/

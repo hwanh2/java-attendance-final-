@@ -11,6 +11,7 @@ public class AttendanceBook {
     private static final LocalTime OTHER_DAYS_CLASS_START = LocalTime.of(10, 0);
     private static final String DUPLICATE_ATTENDANCE_ERROR = "[ERROR] 이미 출석을 확인하였습니다. 필요한 경우 수정 기능을 이용해 주세요.";
     private static final String UNKNOWN_NAME_ERROR = "[ERROR] 등록되지 않은 닉네임입니다.";
+    private static final String FUTURE_DATE_ERROR = "[ERROR] 미래 날짜로는 출석을 수정할 수 없습니다.";
 
     // 출석 등록
     public Attendance registerAttendance(String name, String timeInput) {
@@ -21,7 +22,7 @@ public class AttendanceBook {
 
         validateWeekend(today,day);
 
-        Crew crew = Crew.from(name);
+        Crew crew = findCrewOrThrow(name);
         validateAttended(crew, today);
 
         LocalTime classStart = (day == DayOfWeek.MONDAY) ? MONDAY_CLASS_START : OTHER_DAYS_CLASS_START;
@@ -31,6 +32,15 @@ public class AttendanceBook {
         attendanceBook.get(crew).add(attendance);
 
         return attendance;
+    }
+
+    private Crew findCrewOrThrow(String name) {
+        for (Crew crew : attendanceBook.keySet()) {
+            if (crew.getName().equals(name)) {
+                return crew;
+            }
+        }
+        throw new IllegalArgumentException(UNKNOWN_NAME_ERROR );
     }
 
     // 출석 중복 방지
@@ -84,6 +94,13 @@ public class AttendanceBook {
         return List.of(before, newAttendance);
     }
 
+    public void addAttendance(String name, Attendance attendance) {
+        Crew crew = Crew.from(name);
+        if (!attendanceBook.containsKey(crew)) {
+            attendanceBook.put(crew, new ArrayList<>());
+        }
+        attendanceBook.get(crew).add(attendance);
+    }
 
     // 크루별 출석 목록 조회
     public List<Attendance> getAttendancesByCrew(Crew crew) {
@@ -95,21 +112,13 @@ public class AttendanceBook {
         return attendanceBook;
     }
 
-    private Crew findCrewOrThrow(String name) {
-        Crew crew = Crew.from(name);
-        if (!attendanceBook.containsKey(crew)) {
-            throw new IllegalArgumentException("[ERROR] 등록되지 않은 닉네임입니다.");
-        }
-        return crew;
-    }
-
     private LocalDate validateAndGetTargetDate(int dayOfMonth) {
         YearMonth currentMonth = YearMonth.now();
         LocalDate today = LocalDate.now();
         LocalDate targetDate = currentMonth.atDay(dayOfMonth);
 
         if (targetDate.isAfter(today)) {
-            throw new IllegalArgumentException("[ERROR] 미래 날짜로는 출석을 수정할 수 없습니다.");
+            throw new IllegalArgumentException(FUTURE_DATE_ERROR);
         }
 
         return targetDate;

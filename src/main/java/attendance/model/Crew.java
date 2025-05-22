@@ -14,7 +14,7 @@ public class Crew {
         return new Crew(name);
     }
 
-    public Crew getName(String name) {
-        return new Crew(name);
+    public String getName(){
+        return name;
     }
 }
