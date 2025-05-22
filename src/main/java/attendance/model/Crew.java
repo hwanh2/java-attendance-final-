@@ -10,6 +10,12 @@ public class Crew {
     private int absentCount = 0;
     private AttendanceRiskLevel riskLevel = AttendanceRiskLevel.NORMAL;
 
+    private static final int LATE_PER_ABSENT = 3;
+    private static final int WARNING_THRESHOLD = 2;
+    private static final int COUNSEL_THRESHOLD = 3;
+    private static final int EXPULSION_THRESHOLD = 5;
+
+
     private Crew(String name) {
         this.name = name;
     }
@@ -37,17 +43,17 @@ public class Crew {
     }
 
     private void updateRiskLevel() {
-        int effectiveAbsents = absentCount + (lateCount / 3);
+        int effectiveAbsents = absentCount + (lateCount / LATE_PER_ABSENT);
 
-        if (effectiveAbsents > 5) {
+        if (effectiveAbsents > EXPULSION_THRESHOLD) {
             riskLevel = AttendanceRiskLevel.EXPULSION;
             return;
         }
-        if (effectiveAbsents >= 3) {
+        if (effectiveAbsents >= COUNSEL_THRESHOLD) {
             riskLevel = AttendanceRiskLevel.COUNSEL;
             return;
         }
-        if (effectiveAbsents >= 2) {
+        if (effectiveAbsents >= WARNING_THRESHOLD) {
             riskLevel = AttendanceRiskLevel.WARNING;
             return;
         }

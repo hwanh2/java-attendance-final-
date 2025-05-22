@@ -13,6 +13,12 @@ public class AttendanceBook {
     private static final String UNKNOWN_NAME_ERROR = "[ERROR] 등록되지 않은 닉네임입니다.";
     private static final String FUTURE_DATE_ERROR = "[ERROR] 미래 날짜로는 출석을 수정할 수 없습니다.";
 
+    private static final int LATE_PER_ABSENT = 3;
+    private static final int WARNING_THRESHOLD = 2;
+    private static final int COUNSEL_THRESHOLD = 3;
+    private static final int EXPULSION_THRESHOLD = 5;
+
+
     // 출석 등록
     public Attendance registerAttendance(String name, String timeInput) {
         LocalDate today = LocalDate.now();
