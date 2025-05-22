@@ -1,16 +1,13 @@
 package attendance.service;
 
 import attendance.model.Attendance;
-import attendance.model.AttendanceStatus;
 import attendance.model.AttendanceBook;
-import attendance.model.Crew;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 
 public class AttendanceFileLoaderService {
@@ -42,8 +39,6 @@ public class AttendanceFileLoaderService {
                 // 주말, 공휴일 제외
                 if (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) continue;
                 if (HOLIDAYS.contains(date)) continue;
-
-                Crew crew = Crew.from(name);
 
                 LocalTime classStartTime = getClassStartTime(day);
 

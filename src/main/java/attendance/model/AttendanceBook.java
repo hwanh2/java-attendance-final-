@@ -29,6 +29,7 @@ public class AttendanceBook {
 
         Attendance attendance = Attendance.from(dateTime, classStart);
 
+        crew.applyAttendanceStatus(attendance.getStatus());
         attendanceBook.get(crew).add(attendance);
 
         return attendance;
@@ -87,21 +88,30 @@ public class AttendanceBook {
 
         Attendance before = findAndReplace(records, targetDate, newAttendance);
         if (before != null) {
+            crew.revertAttendanceStatus(before.getStatus());     // 이전 출석 취소
+            crew.applyAttendanceStatus(newAttendance.getStatus()); // 새 출석 반영
             return List.of(before, newAttendance);
         }
 
         // 기존 출석 기록이 없으면 새로 추가
         records.add(newAttendance);
+        crew.applyAttendanceStatus(newAttendance.getStatus());
         before = Attendance.from(newDateTime.withHour(0).withMinute(0), classStart); // 가상의 결석 상태
         return List.of(before, newAttendance);
     }
 
     public void addAttendance(String name, Attendance attendance) {
-        Crew crew = Crew.from(name);
-        if (!attendanceBook.containsKey(crew)) {
-            attendanceBook.put(crew, new ArrayList<>());
+        Crew inputCrew = Crew.from(name);
+        if (!attendanceBook.containsKey(inputCrew)) {
+            attendanceBook.put(inputCrew, new ArrayList<>());
         }
-        attendanceBook.get(crew).add(attendance);
+        for (Crew crew : attendanceBook.keySet()) {
+            if (crew.equals(inputCrew)) {
+                attendanceBook.get(crew).add(attendance);
+                crew.applyAttendanceStatus(attendance.getStatus());
+                break;
+            }
+        }
     }
 
     // 크루별 출석 목록 조회
@@ -109,10 +119,10 @@ public class AttendanceBook {
         return attendanceBook.get(crew);
     }
 
-    // 전체 출석부 조회
-    public Map<Crew, List<Attendance>> getAllAttendances() {
-        return attendanceBook;
+    public Crew getCrew(String name) {
+        return findCrewOrThrow(name);
     }
+
 
     private LocalDate validateAndGetTargetDate(int dayOfMonth) {
         YearMonth currentMonth = YearMonth.now();
