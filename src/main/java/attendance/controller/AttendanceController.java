@@ -8,6 +8,7 @@ import attendance.service.AttendanceFileLoaderService;
 import attendance.view.InputView;
 import attendance.view.OutputView;
 
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class AttendanceController {
@@ -59,10 +60,14 @@ public class AttendanceController {
 
     private void runAttendanceRegister(){
         String name = inputView.readInputName();
+        Crew crew = attendanceBook.getCrew(name);
         String time = inputView.readInputTime();
-        Attendance attendance = attendanceBook.registerAttendance(name,time);
-
-        outputView.printAttendance(attendance);
+        try {
+            Attendance attendance = attendanceBook.registerAttendance(crew, time);
+            outputView.printAttendance(attendance);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("[ERROR] 잘못된 형식을 입력하였습니다.");
+        }
     }
 
     private void runAttendanceModify(){

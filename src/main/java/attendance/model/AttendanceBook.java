@@ -17,7 +17,7 @@ public class AttendanceBook {
 
 
     // 출석 등록
-    public Attendance registerAttendance(String name, String timeInput) {
+    public Attendance registerAttendance(Crew crew, String timeInput) {
         LocalDate today = LocalDate.now();
         LocalTime inputTime = LocalTime.parse(timeInput);
         LocalDateTime dateTime = LocalDateTime.of(today, inputTime);
@@ -25,7 +25,6 @@ public class AttendanceBook {
 
         validateWeekend(today,day);
 
-        Crew crew = findCrewOrThrow(name);
         validateAttended(crew, today);
 
         LocalTime classStart = (day == DayOfWeek.MONDAY) ? MONDAY_CLASS_START : OTHER_DAYS_CLASS_START;
