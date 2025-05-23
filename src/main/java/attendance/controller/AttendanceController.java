@@ -8,6 +8,8 @@ import attendance.service.AttendanceFileLoaderService;
 import attendance.view.InputView;
 import attendance.view.OutputView;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
@@ -59,6 +61,10 @@ public class AttendanceController {
     }
 
     private void runAttendanceRegister(){
+        LocalDate today = LocalDate.now();
+        DayOfWeek day = today.getDayOfWeek();
+        attendanceBook.validateWeekend(today, day); // 먼저 주말 여부 확인
+
         String name = inputView.readInputName();
         Crew crew = attendanceBook.getCrew(name);
         String time = inputView.readInputTime();

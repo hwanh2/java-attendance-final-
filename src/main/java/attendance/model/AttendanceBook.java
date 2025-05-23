@@ -62,7 +62,7 @@ public class AttendanceBook {
         }
     }
 
-    private void validateWeekend(LocalDate today,DayOfWeek day){
+    public void validateWeekend(LocalDate today,DayOfWeek day){
         if (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) {
             String dayName = day.getDisplayName(TextStyle.FULL, Locale.KOREAN);
             throw new IllegalArgumentException(String.format("[ERROR] %d월 %d일 %s은 등교일이 아닙니다.",
