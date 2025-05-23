@@ -1,10 +1,9 @@
 package attendance.view;
 
-import attendance.dto.AttendanceCheckDto;
-import attendance.dto.AttendanceRiskLevel;
-import attendance.dto.RiskCheckDto;
+
 import attendance.model.Attendance;
-import attendance.model.AttendanceStatus;
+import attendance.model.AttendanceRiskLevel;
+import attendance.model.Crew;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -45,13 +44,17 @@ public class OutputView {
         System.out.println();
     }
 
-    public void printMonthlySummary(AttendanceCheckDto dto) {
+    public void printMonthlyAttendance(Crew crew,List<Attendance> records) {
+        String name = crew.getName();
+        int attendCount = crew.getAttendCount();
+        int lateCount = crew.getLateCount();
+        int absentCount = crew.getAbsentCount();
+        AttendanceRiskLevel riskLevel = crew.getRiskLevel();
+
         System.out.println();
-        System.out.println("이번 달 " + dto.getName() + "의 출석 기록입니다.");
+        System.out.println("이번 달 " + name + "의 출석 기록입니다.");
         System.out.println();
 
-        List<Attendance> records = dto.getRecords();
-        records.sort(Comparator.comparing(Attendance::getDateTime));
 
         for (Attendance a : records) {
             LocalDateTime dt = a.getDateTime();
@@ -64,47 +67,33 @@ public class OutputView {
         }
 
         System.out.println();
-        System.out.println(String.format("출석: %d회", dto.getAttendCount()));
-        System.out.println(String.format("지각: %d회", dto.getLateCount()));
-        System.out.println(String.format("결석: %d회", dto.getAbsentCount()));
+        System.out.printf("출석: %d회%n", attendCount);
+        System.out.printf("지각: %d회%n", lateCount);
+        System.out.printf("결석: %d회%n", absentCount);
         System.out.println();
 
-        printRiskLevelMessage(dto.getRiskLevel());
-        System.out.println();
+        printRiskLevelMessage(riskLevel);
     }
+
 
     private void printRiskLevelMessage(AttendanceRiskLevel level) {
         switch (level) {
-            case EXPULSION -> System.out.println("제적 대상자입니다.");
-            case COUNSEL -> System.out.println("면담 대상자입니다.");
-            case WARNING -> System.out.println("경고 대상자입니다.");
+            case EXPULSION -> System.out.println("제적 대상자입니다.\n");
+            case COUNSEL -> System.out.println("면담 대상자입니다.\n");
+            case WARNING -> System.out.println("경고 대상자입니다.\n");
         }
     }
 
-    public void printCrewsRiskLevel(List<RiskCheckDto> results) {
+    public void printCrewsRiskLevel(List<Crew> results) {
         System.out.println("제적 위험자 조회 결과");
 
-        results.sort(new Comparator<RiskCheckDto>() {
-            @Override
-            public int compare(RiskCheckDto a, RiskCheckDto b) {
-                // 1. 위험 레벨 우선순위: EXPULSION > COUNSEL > WARNING
-                int levelCompare = b.getRiskLevel().ordinal() - a.getRiskLevel().ordinal();
-                if (levelCompare != 0) return levelCompare;
+        for (Crew crew : results) {
+            String name = crew.getName();
+            int absent = crew.getAbsentCount();
+            int late = crew.getLateCount();
+            String level = crew.getRiskLevel().getDisplayName();
 
-                // 2. 결석 + (지각 / 3) 내림차순
-                int aScore = a.getAbsentCount() + a.getLateCount() / 3;
-                int bScore = b.getAbsentCount() + b.getLateCount() / 3;
-                if (aScore != bScore) return bScore - aScore;
-
-                // 3. 이름 오름차순
-                return a.getName().compareTo(b.getName());
-            }
-        });
-
-        for (RiskCheckDto dto : results) {
-            String line = String.format("- %s: 결석 %d회, 지각 %d회 (%s)",
-                    dto.getName(), dto.getAbsentCount(), dto.getLateCount(), dto.getRiskLevel().getDisplayName());
-            System.out.println(line);
+            System.out.printf("- %s: 결석 %d회, 지각 %d회 (%s)%n", name, absent, late, level);
         }
         System.out.println();
     }

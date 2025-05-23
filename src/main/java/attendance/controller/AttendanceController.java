@@ -1,41 +1,36 @@
 package attendance.controller;
 
-import attendance.dto.AttendanceCheckDto;
-import attendance.dto.AttendanceRiskLevel;
-import attendance.dto.RiskCheckDto;
 import attendance.model.Attendance;
-import attendance.service.*;
+import attendance.model.AttendanceBook;
+import attendance.model.AttendanceRiskLevel;
+import attendance.model.Crew;
+import attendance.service.AttendanceFileLoaderService;
 import attendance.view.InputView;
 import attendance.view.OutputView;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class AttendanceController {
     private final InputView inputView;
     private final OutputView outputView;
-    private final AttendanceCheckService attendanceCheckService;
     private final AttendanceFileLoaderService attendanceFileLoaderService;
-    private final AttendanceModifyService attendanceModifyService;
-    private final AttendanceRegisterService attendanceRegisterService;
-    private final AttendanceRiskCheckService attendanceRiskCheckService;
+    private final AttendanceBook attendanceBook;
+
 
     public AttendanceController(InputView inputView, OutputView outputView,
-                                AttendanceCheckService attendanceCheckService,
-                                AttendanceFileLoaderService attendanceFileLoaderService,
-                                AttendanceModifyService attendanceModifyService,
-                                AttendanceRegisterService attendanceRegisterService,
-                                AttendanceRiskCheckService attendanceRiskCheckService) {
+                                AttendanceFileLoaderService attendanceFileLoaderService,AttendanceBook attendanceBook) {
         this.inputView = inputView;
         this.outputView = outputView;
-        this.attendanceCheckService = attendanceCheckService;
         this.attendanceFileLoaderService = attendanceFileLoaderService;
-        this.attendanceModifyService = attendanceModifyService;
-        this.attendanceRegisterService = attendanceRegisterService;
-        this.attendanceRiskCheckService = attendanceRiskCheckService;
+        this.attendanceBook = attendanceBook;
     }
 
     public void run(){
         attendanceFileLoaderService.load("src/main/resources/attendances.csv");
+        attendanceBook.fillAbsentsForThisMonth();
 
         while (true) {
             String option = inputView.readInputOption();
@@ -67,11 +62,19 @@ public class AttendanceController {
     }
 
     private void runAttendanceRegister(){
-        String name = inputView.readInputName();
-        String time = inputView.readInputTime();
-        Attendance attendance = attendanceRegisterService.register(name,time);
+        LocalDate today = LocalDate.now();
+        DayOfWeek day = today.getDayOfWeek();
+        attendanceBook.validateWeekend(today, day); // 먼저 주말 여부 확인
 
-        outputView.printAttendance(attendance);
+        String name = inputView.readInputName();
+        Crew crew = attendanceBook.getCrew(name);
+        String time = inputView.readInputTime();
+        try {
+            Attendance attendance = attendanceBook.registerAttendance(crew, time);
+            outputView.printAttendance(attendance);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("[ERROR] 잘못된 형식을 입력하였습니다.");
+        }
     }
 
     private void runAttendanceModify(){
@@ -79,7 +82,7 @@ public class AttendanceController {
         int day = Integer.parseInt(inputView.readModifyInputDay());
         String time = inputView.readModifyInputTime();
 
-        List<Attendance> result = attendanceModifyService.modify(name, day, time);
+        List<Attendance> result = attendanceBook.modifyAttendance(name,day,time);
         Attendance before = result.get(0);
         Attendance after = result.get(1);
 
@@ -88,13 +91,15 @@ public class AttendanceController {
 
     private void runAttendanceCheck(){
         String name = inputView.readInputName();
-        AttendanceCheckDto attendanceCheckDto = attendanceCheckService.AttendanceCheck(name);
+        Crew crew = attendanceBook.getCrew(name);
 
-        outputView.printMonthlySummary(attendanceCheckDto);
+        List<Attendance> records = attendanceBook.getAttendancesByCrew(crew);
+
+        outputView.printMonthlyAttendance(crew,records);
     }
 
     private void runAttendanceRiskCheck(){
-        List<RiskCheckDto> results = attendanceRiskCheckService.attendanceRiskCheck();
+        List<Crew> results = attendanceBook.getAtRiskCrews();
         outputView.printCrewsRiskLevel(results);
     }
 }

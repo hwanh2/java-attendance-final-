@@ -45,9 +45,9 @@ class ApplicationTest extends NsTest {
         assertNowTest(
             () -> {
                 runException("1", "짱수", "08:00");
-                assertThat(output()).contains("12월 13일 금요일 08:00 (출석)");
+                assertThat(output()).contains("5월 23일 금요일 08:00 (출석)");
             },
-            LocalDate.of(2024, 12, 13).atStartOfDay()
+            LocalDate.of(2025, 05, 23).atStartOfDay()
         );
     }
 
