@@ -15,6 +15,39 @@ public class AttendanceBook {
 
     private static final int LATE_PER_ABSENT = 3;
 
+    public void fillAbsentsForThisMonth() {
+        YearMonth thisMonth = YearMonth.now();
+        LocalDate today = LocalDate.now();
+
+        for (Crew crew : attendanceBook.keySet()) {
+            List<Attendance> records = attendanceBook.get(crew);
+            Set<LocalDate> recordedDates = new HashSet<>();
+
+            for (Attendance a : records) {
+                recordedDates.add(a.getDateTime().toLocalDate());
+            }
+            addMissingAbsents(crew, records, recordedDates, thisMonth, today);
+        }
+    }
+
+    private void addMissingAbsents(Crew crew, List<Attendance> records, Set<LocalDate> recordedDates,
+                                   YearMonth thisMonth, LocalDate today) {
+        for (int day = 1; day <= today.getDayOfMonth(); day++) {
+            LocalDate date = thisMonth.atDay(day);
+            DayOfWeek dow = date.getDayOfWeek();
+
+            if (dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY) continue;
+            if (date.equals(LocalDate.of(2025, 5, 5)) || date.equals(LocalDate.of(2025, 5, 6))) continue;
+
+            if (!recordedDates.contains(date)) {
+                LocalTime classStart = (dow == DayOfWeek.MONDAY) ? MONDAY_CLASS_START : OTHER_DAYS_CLASS_START;
+                Attendance absent = Attendance.from(LocalDateTime.of(date, LocalTime.MIDNIGHT), classStart);
+                records.add(absent);
+                crew.applyAttendanceStatus(AttendanceStatus.ABSENT);
+            }
+        }
+    }
+
 
     // 출석 등록
     public Attendance registerAttendance(Crew crew, String timeInput) {

@@ -29,6 +29,9 @@ public class Attendance {
     }
 
     private static AttendanceStatus calculateStatus(LocalDateTime attendTime, LocalTime classStartTime) {
+        if (attendTime.toLocalTime().equals(LocalTime.MIDNIGHT)) {
+            return AttendanceStatus.ABSENT;
+        }
         int attend = attendTime.getHour() * 60 + attendTime.getMinute();
         int start = classStartTime.getHour() * 60 + classStartTime.getMinute();
         int diff = attend - start;

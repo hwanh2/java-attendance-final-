@@ -30,6 +30,7 @@ public class AttendanceController {
 
     public void run(){
         attendanceFileLoaderService.load("src/main/resources/attendances.csv");
+        attendanceBook.fillAbsentsForThisMonth();
 
         while (true) {
             String option = inputView.readInputOption();
