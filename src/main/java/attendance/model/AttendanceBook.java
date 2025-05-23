@@ -26,7 +26,7 @@ public class AttendanceBook {
             for (Attendance a : records) {
                 recordedDates.add(a.getDateTime().toLocalDate());
             }
-            addMissingAbsents(crew, records, recordedDates, thisMonth, today);
+            addMissingAbsents(crew, records, recordedDates, thisMonth, today.minusDays(1));
         }
     }
 
